@@ -4,6 +4,3 @@
 # environment vars
 env.yaml
 .env
-
-# development file
-index.js
