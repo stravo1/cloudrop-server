@@ -1,0 +1,9 @@
+# dependencies
+/node_modules
+
+# environment vars
+env.yaml
+.env
+
+# development file
+index.js
