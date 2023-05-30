@@ -59,7 +59,6 @@ io.on("connection", (socket) => {
   });
 
   socket.on("disconnect", () => {
-    console.log(`${socket.id} disconnected!`);
     let room_obj = io.sockets.adapter.rooms.get(ip_room);
     if (room_obj) {
       io.to(ip_room).emit("room-size", room_obj.size);
