@@ -1,10 +1,13 @@
 const express = require("express");
+const cors = require("cors");
 const { createServer } = require("http");
 const path = require("path");
 const { Server } = require("socket.io");
 const requestIp = require("request-ip");
 
 const app = express();
+app.use(cors());
+
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
@@ -65,6 +68,10 @@ io.on("connection", (socket) => {
       io.to(ip_room).emit("remove-room-member", socket.id);
     }
   });
+});
+
+app.get("/", (req, res) => {
+		res.send("ok");
 });
 
 
