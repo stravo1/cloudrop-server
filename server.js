@@ -15,26 +15,28 @@ const io = new Server(httpServer, {
   },
 });
 
-// io.of("/").adapter.on("create-room", (room) => {
-//   console.log(`room ${room} was created`);
-// });
-
-// io.of("/").adapter.on("join-room", (room, id) => {
-//   console.log(`socket ${id} has joined room ${room}`);
-// });
-
-// io.of("/").adapter.on("leave-room", (room, id) => {
-//   console.log(`socket ${id} has left room ${room}`);
-// });
-
-// io.of("/").adapter.on("delete-room", (room) => {
-//   console.log(`room ${room} was deleted!`);
-// });
+io.use((socket, next) => {
+  const ip_room = requestIp.getClientIp(socket.request);
+  const { deviceName, forced } = socket.handshake.auth;
+  if (forced) {
+    next();
+  } else {
+    let room_obj = io.sockets.adapter.rooms.get(ip_room + deviceName);
+    if (room_obj != undefined) {
+      const err = new Error("same-device");
+      next(err);
+    } else {
+      next();
+    }
+  }
+});
 
 io.on("connection", (socket) => {
   const ip_room = requestIp.getClientIp(socket.request);
+  const { deviceName } = socket.handshake.auth;
 
   socket.join(ip_room);
+  socket.join(ip_room + deviceName);
 
   let room_obj = io.sockets.adapter.rooms.get(ip_room); // list of all the clients
 
@@ -71,8 +73,7 @@ io.on("connection", (socket) => {
 });
 
 app.get("/", (req, res) => {
-		res.send("ok");
+  res.send("ok");
 });
-
 
 httpServer.listen(8080);
